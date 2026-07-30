@@ -135,6 +135,22 @@
                 justify-content: flex-start;
             }
         }
+        @media (min-width: 601px) {
+            .navbar {
+                display: grid !important;
+                grid-template-columns: 1fr auto 1fr;
+                align-items: center;
+            }
+            .navbar h2 {
+                grid-column: 2;
+                text-align: center;
+                margin: 0;
+            }
+            .nav-user {
+                grid-column: 3;
+                justify-content: flex-end;
+            }
+        }
         
         /* Shapkacha logikasi (birinchi harfga kiygizish) */
         #testTitleUI {
@@ -147,10 +163,10 @@
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
             position: absolute;
-            top: -0.4em; /* Sal pasga tushirildi */
-            left: -0.15em;
+            top: -0.45em; /* Sal pasga tushirildi */
+            left: -0.2em;
             font-size: 0.75em;
-            color: #fbbf24;
+            color: inherit; /* Yozuv bilan bir xil rang */
             transform: rotate(-25deg);
             text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
             z-index: 10;
