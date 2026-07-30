@@ -359,7 +359,7 @@
                 for (const test of myTests) {
                     const results = await getResultsForTest(test.id);
                     // Generate proper take-test URL
-                    const testLink = `${window.location.origin}${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}/take-test.html?id=${test.id}`;
+                    const testLink = `${window.location.origin}${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}/take-test.html?testId=${test.id}`;
                     
                     const item = document.createElement('div');
                     item.className = 'test-item';
