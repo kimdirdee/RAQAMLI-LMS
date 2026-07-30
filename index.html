@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texnikum - Zamonaviy Ta'lim</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>RAQAMLI TA'LIM PORTALI</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#home">Asosiy</a>
+            <a href="#courses">Yo'nalishlar</a>
+            <a href="#about">Biz haqimizda</a>
+            <a href="#contact">Aloqa</a>
+        </nav>
+        <div style="display:flex; align-items:center;">
+            <button class="theme-toggle" id="themeToggle" title="Tungi/Kunduzgi rejim" style="margin-right: 2rem;"><i class="fa-solid fa-moon"></i></button>
+            <button class="btn-primary" onclick="window.location.href='login.html'" style="margin-right:0.5rem">Tizimga kirish</button>
+            <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Nav -->
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="#home" onclick="closeMenu()">Asosiy</a>
+        <a href="#courses" onclick="closeMenu()">Yo'nalishlar</a>
+        <a href="#about" onclick="closeMenu()">Biz haqimizda</a>
+        <a href="#contact" onclick="closeMenu()">Aloqa</a>
+        <a href="login.html" onclick="closeMenu()" style="color: var(--primary)">Tizimga kirish</a>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>
+                <span id="typewriter-line1"></span><br>
+                <span class="highlight" id="typewriter-line2"></span>
+                <span class="gradient-cursor" id="cursor"></span>
+            </h1>
+            <p>Zamonaviy texnologiyalar, amaliy ta'lim va professional ustozlar. O'z karyerangizni bugun boshlang.</p>
+
+        </div>
+        <div class="hero-graphic">
+            <div class="glass-card stat-card stat-1">
+                <i class="fa-solid fa-users"></i>
+                <div class="stat-info">
+                    <h3>Minglab</h3>
+                    <p>Talabalar</p>
+                </div>
+            </div>
+            <div class="glass-card stat-card stat-2">
+                <i class="fa-solid fa-briefcase"></i>
+                <div class="stat-info">
+                    <h3>95%</h3>
+                    <p>Ish bilan ta'minlangan</p>
+                </div>
+            </div>
+            <div class="glass-card stat-card stat-3">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <div class="stat-info">
+                    <h3>Tajribali</h3>
+                    <p>Ustozlar</p>
+                </div>
+            </div>
+            <div class="glass-card stat-card stat-4">
+                <i class="fa-solid fa-building-circle-check"></i>
+                <div class="stat-info">
+                    <h3>Qulay</h3>
+                    <p>O'qish muhiti</p>
+                </div>
+            </div>
+            <div class="glow-circle"></div>
+        </div>
+    </section>
+
+    <section id="courses" class="courses">
+        <div class="section-header">
+            <h2>Bizning <span class="highlight">Yo'nalishlar</span></h2>
+            <p>Zamonaviy bozor talablariga moslashtirilgan ta'lim yo'nalishlari</p>
+        </div>
+        
+        <div class="course-grid">
+            <!-- 1 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-palette"></i></div>
+                <h3>Grafik dizayn texnologiyasi</h3>
+                <p>Kreativ dizayn, brending va vizual san'at asoslari.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            
+            <!-- 2 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-bolt"></i></div>
+                <h3>Elektromontyor</h3>
+                <p>Elektr jihozlarini o'rnatish, ta'mirlash va xavfsizlik qoidalari.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            
+            <!-- 3 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-car"></i></div>
+                <h3>Avtomobil servisi</h3>
+                <p>Zamonaviy avtomobillarga texnik xizmat ko'rsatish va ta'mirlash.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- 4 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-shirt"></i></div>
+                <h3>Tikuv va moda texnologiyasi</h3>
+                <p>Kiyim dizayni, bichish-tikish va zamonaviy moda sirlari.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- 5 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-water"></i></div>
+                <h3>Suv xo`jaligi boshqaruv tizimlari operatori</h3>
+                <p>Suv taqsimoti va avtomatlashtirilgan tizimlarni boshqarish.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- 6 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                <h3>IT dasturchi</h3>
+                <p>Dasturlash tillari, web va mobil ilovalar yaratish.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- 7 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-life-ring"></i></div>
+                <h3>Qutqaruvchi</h3>
+                <p>Favqulodda vaziyatlarda yordam ko'rsatish va qutqaruv ishlari.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- 8 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-tractor"></i></div>
+                <h3>Chorvachilik fermasi operatori</h3>
+                <p>Zamonaviy fermalarni boshqarish va chorvachilik texnologiyalari.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- 9 -->
+            <div class="course-card">
+                <div class="course-icon"><i class="fa-solid fa-building"></i></div>
+                <h3>Turar-joy infratuzilmasi operatori</h3>
+                <p>Uy-joy va kommunal xizmatlarni boshqarish va nazorat qilish.</p>
+                <a href="#" class="learn-more">Batafsil <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- BIZ HAQIMIZDA -->
+    <section id="about" class="courses" style="background: rgba(99,102,241,0.03);">
+        <div class="section-header">
+            <h2>Biz <span class="highlight">Haqimizda</span></h2>
+            <p>Dangaradagi 3-son texnikum haqida ma'lumot</p>
+        </div>
+        <div class="grid-3" style="max-width:1100px; margin: 0 auto;">
+            <div class="course-card" style="text-align:center;">
+                <div class="course-icon" style="margin: 0 auto 1rem;"><i class="fa-solid fa-calendar-check"></i></div>
+                <h3>Tajriba</h3>
+                <p>Yillar davomida minglab bitiruvchilarni muvaffaqiyatli tayyorlab kelmoqdamiz.</p>
+            </div>
+            <div class="course-card" style="text-align:center;">
+                <div class="course-icon" style="margin: 0 auto 1rem;"><i class="fa-solid fa-chalkboard-user"></i></div>
+                <h3>Professional Ustozlar</h3>
+                <p>Amaliy tajribaga ega, sertifikatlangan o'qituvchilar jamoasi.</p>
+            </div>
+            <div class="course-card" style="text-align:center;">
+                <div class="course-icon" style="margin: 0 auto 1rem;"><i class="fa-solid fa-award"></i></div>
+                <h3>Davlat Sertifikati</h3>
+                <p>Bitiruvchilar davlat tomonidan tan olingan diplom va sertifikat oladilar.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ALOQA -->
+    <section id="contact" class="courses">
+        <div class="section-header">
+            <h2>Biz Bilan <span class="highlight">Bog'laning</span></h2>
+            <p>Savollaringiz bo'lsa, quyidagi manzillar orqali murojaat qiling</p>
+        </div>
+        <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+            <div class="course-card" onclick="window.open('https://maps.google.com/maps?q=Dang`ara+tuman+3-sonli+texnikum', '_blank')" style="cursor: pointer;">
+                <div class="course-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <h3>Manzil</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">Dang`ara tuman 3-sonli texnikum</p>
+                <span class="learn-more">
+                    Xaritada ochish <i class="fa-solid fa-arrow-right"></i>
+                </span>
+            </div>
+
+            <div class="course-card" onclick="window.open('https://t.me/dangara_3son_texnikum', '_blank')" style="cursor: pointer;">
+                <div class="course-icon"><i class="fa-brands fa-telegram"></i></div>
+                <h3>Telegram</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">Bizning rasmiy kanalimizga obuna bo'ling</p>
+                <span class="learn-more">
+                    @dangara_3son_texnikum <i class="fa-solid fa-arrow-right"></i>
+                </span>
+            </div>
+        </div>
+    </section>
+
+
+    <footer>
+
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>RAQAMLI TA'LIM PORTALI</span>
+                </div>
+                <p>Zamonaviy ta'lim maskani. Kelajak kasblari bu yerda o'rgatiladi.</p>
+            </div>
+            <div class="social-links">
+                <a href="https://t.me/dangara_3son_texnikum" target="_blank"><i class="fa-brands fa-telegram"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Raqamli Ta'lim Portali. Barcha huquqlar himoyalangan.</p>
+            <p style="font-size: 0.8em; margin-top: 5px; color: var(--text-muted);">Asoschi: Dostonbek Ruzmatov</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

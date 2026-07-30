@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Topshirish - Raqamli LMS</title>
+    <link rel="stylesheet" href="lms.css?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+            height: calc(100vh - 100px);
+            align-items: stretch;
+        }
+        @media (max-width: 900px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .left-pane, .right-pane {
+                overflow-y: visible !important;
+                max-height: none !important;
+            }
+        }
+        .left-pane {
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
+            padding-right: 10px;
+        }
+        .right-pane {
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
+            padding-right: 10px;
+        }
+        .download-card {
+            background: rgba(31, 41, 55, 0.4);
+            border: 1px dashed var(--border-hover);
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        .download-icon {
+            font-size: 4rem;
+            color: #8b5cf6;
+            animation: pulse-icon 2s infinite alternate;
+        }
+        @keyframes pulse-icon {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+        .student-modal-input {
+            margin-top: 1rem;
+            text-align: left;
+        }
+        .question-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.25rem;
+            background: rgba(31, 41, 55, 0.35);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .question-row:hover {
+            border-color: var(--border-hover);
+            background: rgba(31, 41, 55, 0.5);
+        }
+        .question-row h4 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .options-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .opt-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: rgba(3, 7, 18, 0.4);
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .opt-btn:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+        .opt-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+        }
+        .success-box {
+            text-align: center;
+            padding: 3rem;
+        }
+        .success-box i {
+            font-size: 5rem;
+            color: var(--success);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Student Name Modal (Shown first) -->
+    <div class="modal-overlay" id="nameModal">
+        <div class="modal-content">
+            <i class="fa-solid fa-user-pen" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h2 style="font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">Testni Boshlash</h2>
+            <p style="color: var(--text-muted); font-size: 0.92rem;">Iltimos, testni boshlashdan oldin ism va familiyangizni tasdiqlang. Bu ma'lumot natijangizni saqlash uchun kerak.</p>
+            
+            <div class="student-modal-input">
+                <label for="studentName" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Ism va Familiyangiz</label>
+                <input type="text" id="studentName" placeholder="Ism va Familiya" required>
+            </div>
+            
+            <button class="btn btn-primary" onclick="confirmStudentName()" style="width: 100%; margin-top: 1rem;">
+                Tasdiqlash va Boshlash <i class="fa-solid fa-circle-play"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Test Header -->
+    <header class="navbar">
+        <h2><i class="fa-solid fa-graduation-cap"></i> <span id="testTitleUI">Test Yuklanmoqda...</span></h2>
+        <div class="nav-user">
+            <span id="studentDisplay"><i class="fa-solid fa-user-graduate"></i> O'quvchi</span>
+        </div>
+    </header>
+
+    <div class="container" style="padding-top: 1.5rem;">
+        
+        <div class="test-grid" id="testArea" class="hidden">
+            
+            <!-- Left Pane: File Viewer -->
+            <div class="left-pane">
+                <div class="card" style="height: 100%; margin-bottom: 0; display: flex; flex-direction: column;">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-file-invoice" style="color: #a5b4fc;"></i> Test Savollari
+                    </h3>
+                    
+                    <div id="fileViewerContainer" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <!-- File embedded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Pane: Answer Sheet -->
+            <div class="right-pane">
+                <div class="card" style="height: 100%; margin-bottom: 0; display: flex; flex-direction: column;">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Javoblar Varaqasi
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Barcha savollarni belgilashingiz shart, aks holda topshirish tugmasi faollashmaydi.
+                    </p>
+                    
+                    <div id="answersContainer" style="flex: 1; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 5px;">
+                        <!-- JS generated answer rows -->
+                    </div>
+                    
+                    <button class="btn btn-success" id="submitBtn" onclick="handleFinishTest()" disabled style="width: 100%; padding: 1rem;">
+                        <i class="fa-solid fa-circle-check"></i> Bo'ldi / Topsihrish
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Success view -->
+        <div class="card success-box hidden" id="successArea">
+            <i class="fa-solid fa-circle-check"></i>
+            <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Test topshirildi!</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto 2rem;">
+                Ism-familiyangiz: <b id="successStudentName" style="color: var(--text-main);"></b><br>
+                Natijangiz: <b id="successScore" style="color: #a5b4fc;"></b><br>
+                Natijangiz o'qituvchining statistikasiga muvaffaqiyatli saqlandi. Qatnashganingiz uchun rahmat!
+            </p>
+            <button class="btn btn-outline" onclick="window.close(); alert('Ushbu oynani yopishingiz mumkin.');">
+                Oynani yopish
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Load DB file -->
+    <script src="db.js?v=8"></script>
+    <script src="app-core.js"></script>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O'qituvchi Paneli - Raqamli LMS</title>
+    <link rel="stylesheet" href="lms.css?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .rating-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+        }
+        .rating-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #a5b4fc;
+            line-height: 1;
+        }
+        .test-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .stats-detail {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        .copy-btn {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <h2><i class="fa-solid fa-graduation-cap"></i> RAQAMLI LMS</h2>
+        <div class="nav-user">
+            <span><i class="fa-solid fa-user-tie"></i> <span id="teacherNameDisplay">O'qituvchi</span></span>
+            <button class="btn btn-outline" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Chiqish</button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Welcome & Rating Row -->
+        <div class="grid-2" style="margin-bottom: 2rem; grid-template-columns: 2fr 1fr;">
+            <div class="card" style="display: flex; flex-direction: column; justify-content: center; margin-bottom: 0;">
+                <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem;">Xush kelibsiz!</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">Ushbu panel yordamida o'quvchilarga test fayllarini yuklashingiz, javoblar kalitini biriktirishingiz va ularning natijalarini real vaqtda kuzatib borishingiz mumkin.</p>
+            </div>
+            
+            <div class="card rating-card" style="margin-bottom: 0;">
+                <div>
+                    <h3 style="font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.5rem;">Umumiy Reyting</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">O'quvchilarning umumiy to'g'ri bajarish ko'rsatkichi</p>
+                </div>
+                <div class="rating-number" id="ratingValue">0%</div>
+            </div>
+        </div>
+
+        <div class="grid-2" style="grid-template-columns: 1.2fr 1.8fr; align-items: start;">
+            
+            <!-- Yangi test yaratish paneli -->
+            <div class="card" id="testFormCard">
+                <h3 style="font-size: 1.4rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-file-circle-plus" style="color: var(--primary);"></i> Yangi test yuklash
+                </h3>
+                
+                <form id="createTestForm" onsubmit="handleSaveTest(event)">
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Test / Fan nomi</label>
+                    <input type="text" id="testTitle" placeholder="Fan nomi" required>
+
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Mo'ljallangan guruh</label>
+                    <select id="testGroup" required>
+                        <option value="01/25">01/25 - Guruh</option>
+                        <option value="02/25">02/25 - Guruh</option>
+                        <option value="03/25">03/25 - Guruh</option>
+                        <option value="04/25">04/25 - Guruh</option>
+                        <option value="05/25">05/25 - Guruh</option>
+                        <option value="06/25">06/25 - Guruh</option>
+                        <option value="07/25">07/25 - Guruh</option>
+                        <option value="08/25">08/25 - Guruh</option>
+                        <option value="01/26">01/26 - Guruh</option>
+                        <option value="02/26">02/26 - Guruh</option>
+                        <option value="03/26">03/26 - Guruh</option>
+                        <option value="04/26">04/26 - Guruh</option>
+                        <option value="05/26">05/26 - Guruh</option>
+                        <option value="06/26">06/26 - Guruh</option>
+                        <option value="07/26">07/26 - Guruh</option>
+                        <option value="08/26">08/26 - Guruh</option>
+                    </select>
+
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Test faylini yuklang (PDF, Word, PPT, Rasm, va hk.)</label>
+                    <input type="file" id="testFile" required style="padding: 0.5rem;">
+
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Savollar soni</label>
+                    <input type="number" id="numQuestions" value="10" min="1" max="100" required oninput="setupAnswerSheetBuilder()">
+
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        Javoblar kaliti matni
+                    </label>
+                    <input type="text" id="answerKeyText" placeholder="1-a, 2-b, 3-c..." oninput="syncTextToGrid()">
+                    <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: -10px; margin-bottom: 1.5rem;">
+                        * Quyidagi javoblar gridi orqali oson belgilang, bu yer avtomatik to'ladi.
+                    </span>
+
+                    <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 0.75rem; color: #a5b4fc;">Javoblar gridini to'ldiring:</h4>
+                    <div class="answer-sheet-grid" id="sheetGrid" style="max-height: 250px; overflow-y: auto; padding: 5px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem;">
+                        <!-- JS generated grid -->
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Testni yuklash va link olish
+                    </button>
+                </form>
+            </div>
+
+            <!-- Yuklangan testlar ro'yxati -->
+            <div>
+                <div class="test-list-header">
+                    <h3 style="font-size: 1.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Yuklangan testlar
+                    </h3>
+                </div>
+
+                <div id="testsContainer">
+                    <!-- Loaded tests list -->
+                </div>
+                
+                <!-- Plus card to quickly focus/add test -->
+                <div class="add-test-card" onclick="focusTestForm()">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span style="font-weight: 600;">Yangi test qo'shish</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Boshqa fan yoki guruh uchun</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DB functions script -->
+    <script src="db.js?v=8"></script>
+    <script>
+        let currentTeacher = null;
+        let answerKeyArray = [];
+
+        function checkAuth() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'teacher') {
+                window.location.href = 'login.html';
+                return;
+            }
+            currentTeacher = user.name;
+            document.getElementById('teacherNameDisplay').textContent = currentTeacher;
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        function focusTestForm() {
+            document.getElementById('testTitle').focus();
+            document.getElementById('testFormCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize the interactive answer key grid
+        function setupAnswerSheetBuilder() {
+            const numQ = parseInt(document.getElementById('numQuestions').value) || 10;
+            const gridContainer = document.getElementById('sheetGrid');
+            gridContainer.innerHTML = '';
+            
+            // Adjust array size
+            const oldLength = answerKeyArray.length;
+            if (answerKeyArray.length < numQ) {
+                for (let i = oldLength; i < numQ; i++) {
+                    answerKeyArray.push('');
+                }
+            } else if (answerKeyArray.length > numQ) {
+                answerKeyArray = answerKeyArray.slice(0, numQ);
+            }
+
+            for (let i = 0; i < numQ; i++) {
+                const row = document.createElement('div');
+                row.className = 'answer-sheet-item';
+                row.innerHTML = `
+                    <h4>${i + 1}-savol</h4>
+                    <div class="answer-sheet-options">
+                        <button type="button" class="sheet-opt-btn ${answerKeyArray[i] === 'a' ? 'active' : ''}" onclick="selectGridAnswer(${i}, 'a')">A</button>
+                        <button type="button" class="sheet-opt-btn ${answerKeyArray[i] === 'b' ? 'active' : ''}" onclick="selectGridAnswer(${i}, 'b')">B</button>
+                        <button type="button" class="sheet-opt-btn ${answerKeyArray[i] === 'c' ? 'active' : ''}" onclick="selectGridAnswer(${i}, 'c')">C</button>
+                        <button type="button" class="sheet-opt-btn ${answerKeyArray[i] === 'd' ? 'active' : ''}" onclick="selectGridAnswer(${i}, 'd')">D</button>
+                    </div>
+                `;
+                gridContainer.appendChild(row);
+            }
+            updateAnswerKeyText();
+        }
+
+        // Toggle selected option in the grid
+        function selectGridAnswer(qIndex, letter) {
+            answerKeyArray[qIndex] = letter;
+            
+            // Highlight selected button
+            const rows = document.getElementById('sheetGrid').children;
+            const buttons = rows[qIndex].querySelectorAll('.sheet-opt-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase() === letter) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            updateAnswerKeyText();
+        }
+
+        // Update the text box based on grid
+        function updateAnswerKeyText() {
+            const formatted = answerKeyArray
+                .map((ans, idx) => ans ? `${idx + 1}-${ans}` : '')
+                .filter(x => x !== '')
+                .join(', ');
+            document.getElementById('answerKeyText').value = formatted;
+        }
+
+        // Sync typed text to the grid
+        function syncTextToGrid() {
+            const text = document.getElementById('answerKeyText').value;
+            const numQ = parseInt(document.getElementById('numQuestions').value) || 10;
+            
+            // Reset array
+            answerKeyArray = new Array(numQ).fill('');
+            
+            // Regex parser
+            const regex = /(\d+)[\s\-.:]*([a-dA-D])/g;
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+                const idx = parseInt(match[1]) - 1;
+                const letter = match[2].toLowerCase();
+                if (idx >= 0 && idx < numQ) {
+                    answerKeyArray[idx] = letter;
+                }
+            }
+
+            // Sync grid buttons UI
+            const rows = document.getElementById('sheetGrid').children;
+            for (let i = 0; i < numQ; i++) {
+                if (i < rows.length) {
+                    const buttons = rows[i].querySelectorAll('.sheet-opt-btn');
+                    buttons.forEach(btn => {
+                        const btnLetter = btn.textContent.toLowerCase();
+                        if (answerKeyArray[i] === btnLetter) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            }
+        }
+
+        // Handle file upload and save test details
+        function handleSaveTest(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('testTitle').value.trim();
+            const group = document.getElementById('testGroup').value;
+            const numQ = parseInt(document.getElementById('numQuestions').value) || 10;
+            const fileInput = document.getElementById('testFile');
+            
+            // Check if all questions have answers
+            const emptyAnswers = [];
+            for (let i = 0; i < numQ; i++) {
+                if (!answerKeyArray[i]) {
+                    emptyAnswers.push(i + 1);
+                }
+            }
+
+            if (emptyAnswers.length > 0) {
+                alert(`Iltimos, quyidagi savollarga javob kalitini belgilang: ${emptyAnswers.join(', ')}`);
+                return;
+            }
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Iltimos, test faylini yuklang!');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const testId = Date.now().toString();
+
+            // Convert File to ArrayBuffer/Blob for storing in IndexedDB
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const fileData = event.target.result; // ArrayBuffer or base64
+
+                const testObject = {
+                    id: testId,
+                    title: title,
+                    group: group,
+                    teacherName: currentTeacher,
+                    numQuestions: numQ,
+                    answerKey: [...answerKeyArray],
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileData: fileData,
+                    createdAt: new Date().toLocaleDateString()
+                };
+
+                saveTest(testObject).then(() => {
+                    alert('Test muvaffaqiyatli saqlandi!');
+                    // Clear form
+                    document.getElementById('createTestForm').reset();
+                    answerKeyArray = [];
+                    setupAnswerSheetBuilder();
+                    
+                    // Reload list
+                    loadTeacherTests();
+                    updateRating();
+                }).catch(err => {
+                    console.error(err);
+                    alert('Testni saqlashda xatolik yuz berdi!');
+                });
+            };
+            
+            // Read as dataurl
+            reader.readAsDataURL(file);
+        }
+
+        // Load tests created by this teacher
+        function loadTeacherTests() {
+            getAllTests().then(tests => {
+                const myTests = tests.filter(t => t.teacherName === currentTeacher);
+                const container = document.getElementById('testsContainer');
+                container.innerHTML = '';
+                
+                if (myTests.length === 0) {
+                    container.innerHTML = '<p class="text-center" style="color: var(--text-muted); margin: 2rem 0;">Yuklangan testlar mavjud emas.</p>';
+                    return;
+                }
+
+                // Sort by ID descending (newest first)
+                myTests.sort((a, b) => b.id - a.id);
+
+                myTests.forEach(test => {
+                    const results = getResultsForTest(test.id);
+                    const testLink = `${window.location.origin}${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}/take-test.html?testId=${test.id}`;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'test-item';
+                    item.style.display = 'block';
+                    
+                    let statsHtml = '';
+                    if (results.length > 0) {
+                        statsHtml = `
+                            <div class="stats-detail">
+                                <h5 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: #a5b4fc;">Statistika (Topshirganlar):</h5>
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th>F.I.SH.</th>
+                                            <th>Sana</th>
+                                            <th>To'g'ri</th>
+                                            <th>Foiz</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${results.map(r => {
+                                            const pct = Math.round((r.score / r.total) * 100);
+                                            let colorClass = 'text-danger';
+                                            if (pct >= 80) colorClass = 'text-success';
+                                            else if (pct >= 50) colorClass = 'text-warning';
+                                            
+                                            return `
+                                                <tr>
+                                                    <td><b>${r.studentName}</b></td>
+                                                    <td><small style="color: var(--text-muted);">${r.date}</small></td>
+                                                    <td>${r.score}/${r.total}</td>
+                                                    <td><span class="${colorClass}">${pct}%</span></td>
+                                                </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    } else {
+                        statsHtml = `
+                            <div class="stats-detail">
+                                <p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Hali hech kim bu testni topshirmadi.</p>
+                            </div>
+                        `;
+                    }
+
+                    item.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                            <div>
+                                <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem;">${test.title}</h4>
+                                <small style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
+                                    Guruh: <b>${test.group}</b> | Savollar: <b>${test.numQuestions} ta</b> | Fayl: <b>${test.fileName}</b>
+                                </small>
+                            </div>
+                            <button class="btn btn-danger btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="handleDeleteTest('${test.id}')">
+                                <i class="fa-solid fa-trash-can"></i> O'chirish
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: center;">
+                            <input type="text" value="${testLink}" readonly style="margin-bottom: 0; padding: 0.4rem 0.8rem; font-size: 0.82rem; flex: 1;">
+                            <button class="btn btn-primary copy-btn" onclick="copyLink(this, '${testLink}')">
+                                <i class="fa-solid fa-copy"></i> Linkni nusxalash
+                            </button>
+                        </div>
+                        ${statsHtml}
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        // Copy link to clipboard
+        function copyLink(btn, link) {
+            navigator.clipboard.writeText(link).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Nusxalandi!';
+                btn.className = 'btn btn-success copy-btn';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.className = 'btn btn-primary copy-btn';
+                }, 2000);
+            });
+        }
+
+        // Delete test
+        function handleDeleteTest(id) {
+            if (confirm("Haqiqatan ham bu testni o'chirmoqchimisiz? Barcha natijalar ham o'chib ketadi!")) {
+                deleteTest(id).then(() => {
+                    loadTeacherTests();
+                    updateRating();
+                });
+            }
+        }
+
+        // Update overall rating widget
+        function updateRating() {
+            getTeacherRating(currentTeacher).then(rating => {
+                document.getElementById('ratingValue').textContent = `${rating}%`;
+            });
+        }
+
+        // On Page Load
+        checkAuth();
+        setupAnswerSheetBuilder();
+        loadTeacherTests();
+        updateRating();
+    </script>
+</body>
+</html>

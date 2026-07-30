@@ -1,0 +1,17 @@
+{
+  "name": "texnikum-lms-backend",
+  "version": "1.0.0",
+  "description": "LMS Backend API with MongoDB and Telegram Bot Storage",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "multer": "^1.4.5-lts.1",
+    "form-data": "^4.0.0",
+    "node-fetch": "^2.7.0"
+  }
+}

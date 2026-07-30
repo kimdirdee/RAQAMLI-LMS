@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tizimga kirish - Raqamli LMS</title>
+    <link rel="stylesheet" href="lms.css?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        .login-card {
+            max-width: 440px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 2.5rem;
+        }
+        .login-logo {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .login-title {
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        .tab-buttons {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #234149;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card login-card text-center">
+        <div class="login-logo">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h2 class="login-title">O'qituvchilar Tizimi</h2>
+        <p class="login-subtitle">LMS portaliga xush kelibsiz</p>
+        
+        <!-- Tabs for switching between Login and Register -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="loginTab" onclick="switchTab('login')">Kirish</button>
+            <button class="tab-btn" id="registerTab" onclick="switchTab('register')">Ro'yxatdan o'tish</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div style="text-align: left; margin-bottom: 0.5rem;">
+                <label for="loginUsername" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Login (Username yoki Email)</label>
+            </div>
+            <input type="text" id="loginUsername" placeholder="Loginni kiriting" required autocomplete="username">
+            
+            <div style="text-align: left; margin-bottom: 0.5rem;">
+                <label for="loginPassword" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Parol</label>
+            </div>
+            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                Kirish <i class="fa-solid fa-right-to-bracket"></i>
+            </button>
+        </form>
+
+        <!-- REGISTRATION FORM -->
+        <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+            <div style="text-align: left; margin-bottom: 0.5rem;">
+                <label for="regFullName" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Ism va Familiyangiz</label>
+            </div>
+            <input type="text" id="regFullName" placeholder="Ism va Familiya" required autocomplete="name">
+
+            <div style="text-align: left; margin-bottom: 0.5rem;">
+                <label for="regUsername" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Login (Username yoki Email)</label>
+            </div>
+            <input type="text" id="regUsername" placeholder="Yangi login kiriting" required autocomplete="username">
+            
+            <div style="text-align: left; margin-bottom: 0.5rem;">
+                <label for="regPassword" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Parol yaratish</label>
+            </div>
+            <input type="password" id="regPassword" placeholder="••••••••" required autocomplete="new-password">
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                Ro'yxatdan o'tish <i class="fa-solid fa-user-plus"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Get registered teachers list from localstorage
+        function getTeachers() {
+            return JSON.parse(localStorage.getItem('lms_teachers') || '[]');
+        }
+
+        // Save teachers list
+        function saveTeachers(teachers) {
+            localStorage.setItem('lms_teachers', JSON.stringify(teachers));
+        }
+
+        // Switch between tabs
+        function switchTab(tab) {
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                loginTab.classList.remove('active');
+                registerTab.classList.add('active');
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            }
+        }
+
+        // Handle Login Submission
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+
+            const teachers = getTeachers();
+            const found = teachers.find(t => t.username === username && t.password === password);
+
+            if (!found) {
+                alert('Xato login yoki parol! Iltimos, qaytadan urining.');
+                return;
+            }
+
+            // Save user session
+            const user = {
+                role: 'teacher',
+                name: found.fullName,
+                username: found.username
+            };
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            window.location.href = 'teacher.html';
+        }
+
+        // Handle Registration Submission
+        function handleRegister(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('regFullName').value.trim();
+            const username = document.getElementById('regUsername').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+
+            if (password.length < 4) {
+                alert('Parol kamida 4 ta belgidan iborat bo\'lishi kerak!');
+                return;
+            }
+
+            const teachers = getTeachers();
+            const exists = teachers.some(t => t.username === username);
+
+            if (exists) {
+                alert('Ushbu login band! Iltimos, boshqa login tanlang.');
+                return;
+            }
+
+            // Add new teacher
+            teachers.push({
+                fullName: fullName,
+                username: username,
+                password: password
+            });
+            saveTeachers(teachers);
+
+            alert('Muvaffaqiyatli ro\'yxatdan o\'tdingiz! Endi kirish qilishingiz mumkin.');
+            document.getElementById('registerForm').reset();
+            switchTab('login');
+            document.getElementById('loginUsername').value = username;
+        }
+
+        // Redirect if already logged in
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user && user.role === 'teacher') {
+            window.location.href = 'teacher.html';
+        }
+    </script>
+</body>
+</html>
