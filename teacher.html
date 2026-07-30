@@ -161,7 +161,7 @@
         function checkAuth() {
             const user = JSON.parse(localStorage.getItem('currentUser'));
             if (!user || user.role !== 'teacher') {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
                 return;
             }
             currentTeacher = user.name;
@@ -170,7 +170,7 @@
 
         function logout() {
             localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
 
         function focusTestForm() {
@@ -342,9 +342,8 @@
             reader.readAsDataURL(file);
         }
 
-        // Load tests created by this teacher
-        function loadTeacherTests() {
-            getAllTests().then(tests => {
+        async function loadTeacherTests() {
+            getAllTests().then(async (tests) => {
                 const myTests = tests.filter(t => t.teacherName === currentTeacher);
                 const container = document.getElementById('testsContainer');
                 container.innerHTML = '';
@@ -357,16 +356,17 @@
                 // Sort by ID descending (newest first)
                 myTests.sort((a, b) => b.id - a.id);
 
-                myTests.forEach(test => {
-                    const results = getResultsForTest(test.id);
-                    const testLink = `${window.location.origin}${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}/take-test.html?testId=${test.id}`;
+                for (const test of myTests) {
+                    const results = await getResultsForTest(test.id);
+                    // Generate proper take-test URL
+                    const testLink = `${window.location.origin}${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}/take-test.html?id=${test.id}`;
                     
                     const item = document.createElement('div');
                     item.className = 'test-item';
                     item.style.display = 'block';
                     
                     let statsHtml = '';
-                    if (results.length > 0) {
+                    if (results && results.length > 0) {
                         statsHtml = `
                             <div class="stats-detail">
                                 <h5 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: #a5b4fc;">Statistika (Topshirganlar):</h5>
@@ -412,7 +412,7 @@
                             <div>
                                 <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem;">${test.title}</h4>
                                 <small style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
-                                    Guruh: <b>${test.group}</b> | Savollar: <b>${test.numQuestions} ta</b> | Fayl: <b>${test.fileName}</b>
+                                    Guruh: <b>${test.group || 'Umumiy'}</b> | Savollar: <b>${test.numQuestions} ta</b> | Fayl: <b>${test.fileName}</b>
                                 </small>
                             </div>
                             <button class="btn btn-danger btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="handleDeleteTest('${test.id}')">
@@ -428,7 +428,7 @@
                         ${statsHtml}
                     `;
                     container.appendChild(item);
-                });
+                }
             });
         }
 
