@@ -121,18 +121,39 @@
             .navbar {
                 flex-direction: column-reverse;
                 align-items: flex-start;
-                gap: 0.8rem;
-                padding: 1rem;
+                gap: 0.4rem;
+                padding: 0.5rem 1rem 0.8rem 1rem;
             }
             .navbar h2 {
                 text-align: center;
                 width: 100%;
                 font-size: 1.15rem !important;
+                margin-top: 0.2rem;
             }
             .nav-user {
                 width: 100%;
                 justify-content: flex-start;
             }
+        }
+        
+        /* Shapkacha logikasi (birinchi harfga kiygizish) */
+        #testTitleUI {
+            position: relative;
+            display: inline-block;
+            margin-top: 8px; /* Shlyapaga joy ochish */
+        }
+        #testTitleUI::before {
+            content: "\f801"; /* FontAwesome Graduation Cap */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: -0.55em; /* Harfning ustiga */
+            left: -0.15em; /* Sal chaproqqa qiyalik uchun */
+            font-size: 0.75em; /* Harfdan biroz kichikroq */
+            color: #fbbf24; /* Tilla rang */
+            transform: rotate(-25deg);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            z-index: 10;
         }
     </style>
 </head>
@@ -158,7 +179,7 @@
 
     <!-- Main Test Header -->
     <header class="navbar">
-        <h2><i class="fa-solid fa-graduation-cap"></i> <span id="testTitleUI">Test Yuklanmoqda...</span></h2>
+        <h2><span id="testTitleUI">Test Yuklanmoqda...</span></h2>
         <div class="nav-user">
             <span id="studentDisplay"><i class="fa-solid fa-user-graduate"></i> O'quvchi</span>
         </div>
