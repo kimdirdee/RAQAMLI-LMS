@@ -3,10 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const https = require('https');
+const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'ejjlgoklmoagnxoshttb.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const BUCKET_NAME = 'tests';
+
+const formattedUrl = SUPABASE_URL.startsWith('http') ? SUPABASE_URL : `https://${SUPABASE_URL}`;
+const supabase = SUPABASE_KEY ? createClient(formattedUrl, SUPABASE_KEY) : null;
 
 const app = express();
 app.use(cors());
@@ -68,33 +72,23 @@ app.post('/api/tests', async (req, res) => {
                 const buffer = Buffer.from(base64Data, 'base64');
                 const uniqueFileName = `${Date.now()}_${testData.fileName.replace(/\s+/g, '_')}`;
                 
-                // Supabase API orqali faylni yuklash
-                await new Promise((resolve, reject) => {
-                    const options = {
-                        hostname: SUPABASE_URL,
-                        port: 443,
-                        path: `/storage/v1/object/${BUCKET_NAME}/${encodeURIComponent(uniqueFileName)}`,
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                            'Content-Type': contentType,
-                            'Content-Length': buffer.length
-                        }
-                    };
-                    const request = https.request(options, (response) => {
-                        if (response.statusCode >= 200 && response.statusCode < 300) {
-                            resolve();
-                        } else {
-                            reject(new Error(`Upload failed with status ${response.statusCode}`));
-                        }
-                    });
-                    request.on('error', reject);
-                    request.write(buffer);
-                    request.end();
-                });
+                // Supabase SDK orqali yuklash
+                if (!supabase) throw new Error("Supabase kaliti topilmadi");
                 
-                // Public URL ni saqlash (Base64 o'rniga faqat URL saqlanadi)
-                testData.fileData = `https://${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${encodeURIComponent(uniqueFileName)}`;
+                const { error: uploadError } = await supabase.storage
+                    .from(BUCKET_NAME)
+                    .upload(uniqueFileName, buffer, {
+                        contentType: contentType,
+                        upsert: false
+                    });
+
+                if (uploadError) {
+                    throw new Error(`Supabase xatosi: ${uploadError.message}`);
+                }
+                
+                // Public URL ni saqlash
+                const cleanUrl = SUPABASE_URL.replace('https://', '');
+                testData.fileData = `https://${cleanUrl}/storage/v1/object/public/${BUCKET_NAME}/${encodeURIComponent(uniqueFileName)}`;
             }
         }
 
@@ -132,30 +126,18 @@ app.get('/api/tests/:id', async (req, res) => {
 // 4. Delete Test
 app.delete('/api/tests/:id', async (req, res) => {
     try {
-        const testToDelete = await Test.findOne({ id: req.params.id });
-        if (testToDelete && testToDelete.fileData && testToDelete.fileData.includes('supabase.co')) {
-            const parts = testToDelete.fileData.split('/');
-            const fileName = parts[parts.length - 1];
-            
-            // Supabase API orqali faylni ham o'chirish (Xotira to'lib qolmasligi uchun)
-            await new Promise((resolve, reject) => {
-                const options = {
-                    hostname: SUPABASE_URL,
-                    port: 443,
-                    path: `/storage/v1/object/${BUCKET_NAME}/${fileName}`,
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                };
-                const request = https.request(options, (response) => {
-                    resolve(); 
-                });
-                request.on('error', (e) => console.error("Faylni o'chirishda xato:", e));
-                request.end();
-            });
+        const test = await Test.findOne({ id: req.params.id });
+        if (test && test.fileData && test.fileData.includes('supabase.co')) {
+            try {
+                if (supabase) {
+                    const urlParts = test.fileData.split('/');
+                    const fileName = decodeURIComponent(urlParts[urlParts.length - 1]);
+                    await supabase.storage.from(BUCKET_NAME).remove([fileName]);
+                }
+            } catch (err) {
+                console.error("Faylni o'chirishda xatolik:", err);
+            }
         }
-
         await Test.findOneAndDelete({ id: req.params.id });
         await Result.deleteMany({ testId: req.params.id });
         res.json({ success: true });
