@@ -80,9 +80,9 @@
                     <i class="fa-solid fa-file-circle-plus" style="color: var(--primary);"></i> Yangi test yuklash
                 </h3>
                 
-                <form id="createTestForm" onsubmit="handleSaveTest(event)">
+                <form id="createTestForm" onsubmit="handleSaveTest(event)" autocomplete="off">
                     <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Test / Fan nomi</label>
-                    <input type="text" id="testTitle" placeholder="Fan nomi" required>
+                    <input type="text" id="testTitle" placeholder="Fan nomi" required autocomplete="off">
 
                     <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Mo'ljallangan guruh</label>
                     <select id="testGroup" required>
@@ -113,7 +113,7 @@
                     <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">
                         Javoblar kaliti matni
                     </label>
-                    <input type="text" id="answerKeyText" placeholder="1-a, 2-b, 3-c..." oninput="syncTextToGrid()">
+                    <input type="text" id="answerKeyText" placeholder="1-a, 2-b, 3-c..." oninput="syncTextToGrid()" autocomplete="off">
                     <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: -10px; margin-bottom: 1.5rem;">
                         * Quyidagi javoblar gridi orqali oson belgilang, bu yer avtomatik to'ladi.
                     </span>
