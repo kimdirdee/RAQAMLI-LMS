@@ -5,7 +5,10 @@ function saveTest(test) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(test)
-    }).then(res => res.json()).then(data => data.test);
+    }).then(res => res.json()).then(data => {
+        if (data.error) throw new Error(data.error);
+        return data.test;
+    });
 }
 
 function getTest(id) {
