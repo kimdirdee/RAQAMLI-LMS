@@ -343,28 +343,25 @@
             reader.readAsDataURL(file);
         }
 
-        async function loadTeacherTests() {
+        async function loadTeacherTests(isAutoRefresh = false) {
             getAllTests().then(async (tests) => {
                 const myTests = tests.filter(t => t.teacherName === currentTeacher);
                 const container = document.getElementById('testsContainer');
-                container.innerHTML = '';
                 
                 if (myTests.length === 0) {
-                    container.innerHTML = '<p class="text-center" style="color: var(--text-muted); margin: 2rem 0;">Yuklangan testlar mavjud emas.</p>';
+                    if(!isAutoRefresh) container.innerHTML = '<p class="text-center" style="color: var(--text-muted); margin: 2rem 0;">Yuklangan testlar mavjud emas.</p>';
                     return;
                 }
 
                 // Sort by ID descending (newest first)
                 myTests.sort((a, b) => b.id - a.id);
+                
+                if(!isAutoRefresh) container.innerHTML = '';
 
                 for (const test of myTests) {
                     const results = await getResultsForTest(test.id);
                     // Generate proper take-test URL
                     const testLink = `${window.location.origin}${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}/take-test.html?testId=${test.id}`;
-                    
-                    const item = document.createElement('div');
-                    item.className = 'test-item';
-                    item.style.display = 'block';
                     
                     let statsHtml = '';
                     if (results && results.length > 0) {
@@ -408,27 +405,38 @@
                         `;
                     }
 
-                    item.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
-                            <div>
-                                <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem;">${test.title}</h4>
-                                <small style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
-                                    Guruh: <b>${test.group || 'Umumiy'}</b> | Savollar: <b>${test.numQuestions} ta</b> | Fayl: <b>${test.fileName}</b>
-                                </small>
+                    
+                    if (isAutoRefresh) {
+                        const existingStats = document.getElementById(`stats-${test.id}`);
+                        if (existingStats && existingStats.innerHTML !== statsHtml) {
+                            existingStats.innerHTML = statsHtml;
+                        }
+                    } else {
+                        const item = document.createElement('div');
+                        item.className = 'test-item';
+                        item.style.display = 'block';
+                        item.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                                <div>
+                                    <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem;">${test.title}</h4>
+                                    <small style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
+                                        Guruh: <b>${test.group || 'Umumiy'}</b> | Savollar: <b>${test.numQuestions} ta</b> | Fayl: <b>${test.fileName}</b>
+                                    </small>
+                                </div>
+                                <button class="btn btn-danger btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="handleDeleteTest('${test.id}')">
+                                    <i class="fa-solid fa-trash-can"></i> O'chirish
+                                </button>
                             </div>
-                            <button class="btn btn-danger btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="handleDeleteTest('${test.id}')">
-                                <i class="fa-solid fa-trash-can"></i> O'chirish
-                            </button>
-                        </div>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: center;">
-                            <input type="text" value="${testLink}" readonly style="margin-bottom: 0; padding: 0.4rem 0.8rem; font-size: 0.82rem; flex: 1;">
-                            <button class="btn btn-primary copy-btn" onclick="copyLink(this, '${testLink}')">
-                                <i class="fa-solid fa-copy"></i> Linkni nusxalash
-                            </button>
-                        </div>
-                        ${statsHtml}
-                    `;
-                    container.appendChild(item);
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: center;">
+                                <input type="text" value="${testLink}" readonly style="margin-bottom: 0; padding: 0.4rem 0.8rem; font-size: 0.82rem; flex: 1;">
+                                <button class="btn btn-primary copy-btn" onclick="copyLink(this, '${testLink}')">
+                                    <i class="fa-solid fa-copy"></i> Linkni nusxalash
+                                </button>
+                            </div>
+                            <div id="stats-${test.id}">${statsHtml}</div>
+                        `;
+                        container.appendChild(item);
+                    }
                 }
             });
         }
@@ -468,6 +476,12 @@
         setupAnswerSheetBuilder();
         loadTeacherTests();
         updateRating();
+        
+        // Natijalarni har 5 soniyada avtomatik tekshirib turish
+        setInterval(() => {
+            loadTeacherTests(true);
+            updateRating();
+        }, 5000);
     </script>
 </body>
 </html>

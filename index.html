@@ -82,16 +82,16 @@
         </div>
 
         <!-- LOGIN FORM -->
-        <form id="loginForm" onsubmit="handleLogin(event)">
+        <form id="loginForm" onsubmit="handleLogin(event)" autocomplete="off">
             <div style="text-align: left; margin-bottom: 0.5rem;">
                 <label for="loginUsername" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Login (Username yoki Email)</label>
             </div>
-            <input type="text" id="loginUsername" placeholder="Loginni kiriting" required autocomplete="username">
+            <input type="text" id="loginUsername" placeholder="Loginni kiriting" required autocomplete="off">
             
             <div style="text-align: left; margin-bottom: 0.5rem;">
                 <label for="loginPassword" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Parol</label>
             </div>
-            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="off">
 
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                 Kirish <i class="fa-solid fa-right-to-bracket"></i>
@@ -99,21 +99,21 @@
         </form>
 
         <!-- REGISTRATION FORM -->
-        <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+        <form id="registerForm" class="hidden" onsubmit="handleRegister(event)" autocomplete="off">
             <div style="text-align: left; margin-bottom: 0.5rem;">
                 <label for="regFullName" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Ism va Familiyangiz</label>
             </div>
-            <input type="text" id="regFullName" placeholder="Ism va Familiya" required autocomplete="name">
+            <input type="text" id="regFullName" placeholder="Ism va Familiya" required autocomplete="off">
 
             <div style="text-align: left; margin-bottom: 0.5rem;">
                 <label for="regUsername" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Login (Username yoki Email)</label>
             </div>
-            <input type="text" id="regUsername" placeholder="Yangi login kiriting" required autocomplete="username">
+            <input type="text" id="regUsername" placeholder="Yangi login kiriting" required autocomplete="off">
             
             <div style="text-align: left; margin-bottom: 0.5rem;">
                 <label for="regPassword" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Parol yaratish</label>
             </div>
-            <input type="password" id="regPassword" placeholder="••••••••" required autocomplete="new-password">
+            <input type="password" id="regPassword" placeholder="••••••••" required autocomplete="off">
 
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                 Ro'yxatdan o'tish <i class="fa-solid fa-user-plus"></i>
