@@ -2,6 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const https = require('https');
+
+const SUPABASE_URL = process.env.SUPABASE_URL || 'ejjlgoklmoagnxoshttb.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const BUCKET_NAME = 'tests';
 
 const app = express();
 app.use(cors());
@@ -52,12 +57,52 @@ const Result = mongoose.model('Result', resultSchema);
 // 1. Upload Test
 app.post('/api/tests', async (req, res) => {
     try {
-        const testData = req.body;
+        let testData = req.body;
+        
+        // Agar fayl (base64) kiritilgan bo'lsa, uni Supabase'ga yuklaymiz
+        if (testData.fileData && testData.fileName && testData.fileData.startsWith('data:')) {
+            const matches = testData.fileData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+            if (matches && matches.length === 3) {
+                const contentType = matches[1];
+                const base64Data = matches[2];
+                const buffer = Buffer.from(base64Data, 'base64');
+                const uniqueFileName = `${Date.now()}_${testData.fileName.replace(/\s+/g, '_')}`;
+                
+                // Supabase API orqali faylni yuklash
+                await new Promise((resolve, reject) => {
+                    const options = {
+                        hostname: SUPABASE_URL,
+                        port: 443,
+                        path: `/storage/v1/object/${BUCKET_NAME}/${encodeURIComponent(uniqueFileName)}`,
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': contentType,
+                            'Content-Length': buffer.length
+                        }
+                    };
+                    const request = https.request(options, (response) => {
+                        if (response.statusCode >= 200 && response.statusCode < 300) {
+                            resolve();
+                        } else {
+                            reject(new Error(`Upload failed with status ${response.statusCode}`));
+                        }
+                    });
+                    request.on('error', reject);
+                    request.write(buffer);
+                    request.end();
+                });
+                
+                // Public URL ni saqlash (Base64 o'rniga faqat URL saqlanadi)
+                testData.fileData = `https://${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${encodeURIComponent(uniqueFileName)}`;
+            }
+        }
+
         const newTest = new Test(testData);
         await newTest.save();
         res.json({ success: true, test: newTest });
     } catch (err) {
-        console.error(err);
+        console.error("Xatolik yuz berdi:", err);
         res.status(500).json({ error: 'Server xatosi' });
     }
 });
@@ -87,6 +132,30 @@ app.get('/api/tests/:id', async (req, res) => {
 // 4. Delete Test
 app.delete('/api/tests/:id', async (req, res) => {
     try {
+        const testToDelete = await Test.findOne({ id: req.params.id });
+        if (testToDelete && testToDelete.fileData && testToDelete.fileData.includes('supabase.co')) {
+            const parts = testToDelete.fileData.split('/');
+            const fileName = parts[parts.length - 1];
+            
+            // Supabase API orqali faylni ham o'chirish (Xotira to'lib qolmasligi uchun)
+            await new Promise((resolve, reject) => {
+                const options = {
+                    hostname: SUPABASE_URL,
+                    port: 443,
+                    path: `/storage/v1/object/${BUCKET_NAME}/${fileName}`,
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                };
+                const request = https.request(options, (response) => {
+                    resolve(); 
+                });
+                request.on('error', (e) => console.error("Faylni o'chirishda xato:", e));
+                request.end();
+            });
+        }
+
         await Test.findOneAndDelete({ id: req.params.id });
         await Result.deleteMany({ testId: req.params.id });
         res.json({ success: true });
